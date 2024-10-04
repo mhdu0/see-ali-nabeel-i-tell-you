@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختيار خيارات متعددة وتحديد الوقت</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(92, 26, 26, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #results {
+            margin-top: 20px;
+        }
+
+        .reset-button {
+            background-color: #dc3545;
+        }
+
+        .reset-button:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BLOWMOLDER</h1>
+        <form id="optionsForm">
+            <label>
+                <input type="radio" name="option" value="PREFORM JAM" required> PREFORM JAM
+            </label>
+            <label>
+                <input type="radio" name="option" value="CR1"> CR1
+            </label>
+            <label>
+                <input type="radio" name="option" value="خيار 3"> خيار 3 
+            </label>
+
+            <label for="timeInput">حدد الوقت (12 ساعة):</label>
+            <input type="time" id="timeInput" name="timeInput" required>
+            
+            <button type="submit">إرسال</button>
+            <button type="button" class="reset-button" onclick="resetForm()">إعادة تعيين</button>
+        </form>
+        <div id="results"></div>
+    </div>
+    <script>
+        document.getElementById('optionsForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const selectedOption = document.querySelector('input[name="option"]:checked').value;
+            const selectedTime = document.getElementById('timeInput').value;
+
+            // إرسال البيانات إلى الخادم
+            fetch('http://localhost:3000/api/data', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ info: selectedOption, time: selectedTime })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('results').innerHTML = <p>لقد اخترت: ${data.info}</p><p>الوقت المحدد: ${data.time} </p> ;
+            })
+            .catch(error => console.error('خطأ:', error));
+        });
+
+        function resetForm() {
+            document.getElementById('optionsForm').reset();
+            document.getElementById('results').innerHTML = '';
+        }
+    </script>
+</body>
+</html>
